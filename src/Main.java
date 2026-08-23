@@ -61,7 +61,7 @@ public class Main {
         System.out.println("=========================================");
         System.out.println(" 1. Print ALL records from CSV (neat output)");
         System.out.println(" 2. Load dataset into ArrayList + LinkedList (print counts)");
-        System.out.println(" 3. Run Insertion Sort demo (Member A)");
+        System.out.println(" 3. Run Insertion Sort demo ");
         System.out.println(" 4. Prove generic sort works on List<Integer>");
         System.out.println(" 5. Run Bubble Sort demo");
         System.out.println(" 6. Run Merge Sort / built-in sort demo");
