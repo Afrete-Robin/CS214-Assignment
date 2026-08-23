@@ -11,6 +11,28 @@ FILES
 - TestSort.java / TestSortGeneric.java — test files demonstrating correctness
 
 HOW TO RUN
+javac -d out src\*.java
+java -cp out Main
+
+Choose option 8 from the menu to open the sorting race. The race now pauses
+briefly after each progress update so the sorting activity is easier to see.
+
+Option 5 demonstrates bubble sort. Option 6 demonstrates merge sort on both
+list structures and Java's built-in sort. Option 7 runs all seven required
+algorithm/data-structure combinations 30 times, shuffling the data before
+every run, and reports comparison and swap counts as best/mean/median/worst.
+
+SortAlgorithms.java contains the shared insertion/bubble APIs and counters.
+MergeSort.java contains merge sort for both list structures.
+EmpiricalTestHarness.java runs and summarizes the 30-run benchmark.
+
+Theoretical summary: insertion sort and bubble sort are O(n^2) on randomized
+data. Merge sort and Java's built-in object sort are O(n log n) in typical and
+worst-case comparison behavior. ArrayList generally performs better for
+indexed operations, while merge sort stays close to O(n log n) for both list
+structures because it uses array-backed working lists.
+
+For the original insertion-sort test only:
 javac University.java CsvReader.java SortAlgorithms.java TestSort.java
 java TestSort
 
