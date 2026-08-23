@@ -1,4 +1,4 @@
-Here's the plain text version, ready to copy and paste:
+
 
 ---
 
