@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -6,6 +8,7 @@ import java.util.List;
 
 public class EmpiricalTestHarness {
     private static final int RUNS = 30;
+    private static final String CSV_FILE = "empirical_results.csv";
 
     private enum Algorithm {
         INSERTION_ARRAY("Insertion Sort", "ArrayList"),
@@ -46,12 +49,6 @@ public class EmpiricalTestHarness {
             times.add(timeNs / 1_000_000);
         }
 
-        void print() {
-            System.out.printf("%-30s %12s %12s %12s %12s %12s %12s%n",
-                    algorithm, format(comparisons), format(swaps),
-                    format(times), median(comparisons), median(swaps), median(times));
-        }
-
         long mean(List<Long> values) {
             long total = 0;
             for (long value : values) total += value;
@@ -72,12 +69,28 @@ public class EmpiricalTestHarness {
             return Collections.max(values);
         }
 
-        String format(List<Long> values) {
-            return best(values) + "/" + mean(values) + "/" + median(values) + "/" + worst(values);
-        }
-
         long meanTime() {
             return mean(times);
+        }
+
+        // Stacked block per algorithm — never depends on terminal width,
+        // unlike a single very wide row.
+        void print() {
+            System.out.println(algorithm);
+            System.out.printf("  Comparisons : best=%,d  mean=%,d  worst=%,d  (median=%,d)%n",
+                    best(comparisons), mean(comparisons), worst(comparisons), median(comparisons));
+            System.out.printf("  Swaps       : best=%,d  mean=%,d  worst=%,d  (median=%,d)%n",
+                    best(swaps), mean(swaps), worst(swaps), median(swaps));
+            System.out.printf("  Time (ms)   : best=%,d  mean=%,d  worst=%,d  (median=%,d)%n",
+                    best(times), mean(times), worst(times), median(times));
+            System.out.println();
+        }
+
+        String toCsvRow() {
+            return algorithm + ","
+                    + best(comparisons) + "," + mean(comparisons) + "," + worst(comparisons) + ","
+                    + best(swaps) + "," + mean(swaps) + "," + worst(swaps) + ","
+                    + best(times) + "," + mean(times) + "," + worst(times);
         }
     }
 
@@ -103,21 +116,34 @@ public class EmpiricalTestHarness {
             results.add(result);
         }
 
-        System.out.println("\nEmpirical results (30 randomized runs; values are best/mean/median/worst)");
-        System.out.printf("%-30s %12s %12s %12s %12s %12s %12s%n",
-                " Algorithm ", " Comparisons ", " Swaps ", " Time (ms) ",
-                " Cmp median ", " Swap median ", " Time median ");
+        System.out.println("\nEmpirical results (30 randomized runs)");
+        System.out.println("=".repeat(60));
         for (Result result : results) result.print();
 
         Result fastest = results.get(0);
         for (Result result : results) {
             if (result.meanTime() < fastest.meanTime()) fastest = result;
         }
-        System.out.println("\nFastest average measured time: " + fastest.algorithm
+        System.out.println("Fastest average measured time: " + fastest.algorithm
                 + " (" + fastest.meanTime() + " ms).");
         System.out.println("Merge sort stays near O(n log n), while insertion and bubble sort "
             + "are O(n^2) on randomized input. ArrayList avoids the indexed-access cost "
             + "that makes insertion sort especially expensive on LinkedList.");
+
+        writeCsv(results);
+    }
+
+    private void writeCsv(List<Result> results) {
+        try (FileWriter writer = new FileWriter(CSV_FILE)) {
+            writer.write("Algorithm,BestComparisons,MeanComparisons,WorstComparisons,"
+                    + "BestSwaps,MeanSwaps,WorstSwaps,BestTimeMs,MeanTimeMs,WorstTimeMs\n");
+            for (Result r : results) {
+                writer.write(r.toCsvRow() + "\n");
+            }
+            System.out.println("\nCSV written to " + CSV_FILE);
+        } catch (IOException e) {
+            System.out.println("Could not write CSV: " + e.getMessage());
+        }
     }
 
     private List<University> copyFor(Algorithm algorithm, List<University> source) {
