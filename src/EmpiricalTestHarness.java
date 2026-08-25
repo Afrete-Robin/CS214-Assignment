@@ -105,8 +105,8 @@ public class EmpiricalTestHarness {
 
         System.out.println("\nEmpirical results (30 randomized runs; values are best/mean/median/worst)");
         System.out.printf("%-30s %12s %12s %12s %12s %12s %12s%n",
-                "Algorithm", "Comparisons", "Swaps", "Time (ms)",
-                "Cmp median", "Swap median", "Time median");
+                " Algorithm ", " Comparisons ", " Swaps ", " Time (ms) ",
+                " Cmp median ", " Swap median ", " Time median ");
         for (Result result : results) result.print();
 
         Result fastest = results.get(0);
