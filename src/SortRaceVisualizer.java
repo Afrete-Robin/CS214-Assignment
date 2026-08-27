@@ -1,22 +1,29 @@
+// Swing creates the window and progress bars.
 import javax.swing.*;
+// AWT provides colors, sizes, and drawing tools.
 import java.awt.*;
-import java.util.ArrayList;
+// List stores the sorting tasks and UI items.
 import java.util.List;
+// These classes run the sorting tasks at the same time.
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+// Map stores progress for each task.
 import java.util.HashMap;
 import java.util.Map;
 
 public class SortRaceVisualizer {
+    // Main race window.
     private JFrame frame;
+    // Panel that holds the progress bars.
     private JPanel panel;
-    private List<JProgressBar> bars = new ArrayList<>();
-    private List<JLabel> labels = new ArrayList<>();
 
+    // Shares progress updates between sorting tasks.
     public static class ProgressTracker {
+        // Current progress for each task name.
         private final Map<String, Integer> progressByTask = new HashMap<>();
 
+        // Updates a task's progress bar.
         public synchronized void update(String taskName, int progress, JProgressBar progressBar) {
             int previous = progressByTask.getOrDefault(taskName, -1);
             if (progress <= previous) return;
@@ -24,11 +31,9 @@ public class SortRaceVisualizer {
             SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
         }
 
-        public synchronized Map<String, Integer> snapshot() {
-            return new HashMap<>(progressByTask);
-        }
     }
 
+    // Builds the race window.
     public SortRaceVisualizer() {
         try {
             SwingUtilities.invokeAndWait(this::buildUI);
@@ -37,6 +42,7 @@ public class SortRaceVisualizer {
         }
     }
 
+    // Creates the frame and its main panel.
     private void buildUI() {
         frame = new JFrame("Sorting Race");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -49,10 +55,14 @@ public class SortRaceVisualizer {
         frame.setVisible(true);
     }
 
+    // Adds one runner and returns its progress bar.
     public JProgressBar addRunner(String name) {
+        // Holds the runner label and progress bar.
         JPanel row = new JPanel(new BorderLayout(8,8));
+        // Shows the runner name.
         JLabel label = new JLabel(name);
         label.setPreferredSize(new Dimension(220, 20));
+        // Chooses a color based on the algorithm name.
         Color runnerColor = colorForRunner(name);
         JProgressBar bar = new CarProgressBar(runnerColor);
         label.setForeground(runnerColor.darker());
@@ -61,11 +71,10 @@ public class SortRaceVisualizer {
         row.add(bar, BorderLayout.CENTER);
         panel.add(row);
         panel.revalidate();
-        bars.add(bar);
-        labels.add(label);
         return bar;
     }
 
+    // Chooses the color used for one runner.
     private Color colorForRunner(String name) {
         if (name.startsWith("Insertion Sort")) {
             return new Color(52, 152, 219);
@@ -85,9 +94,12 @@ public class SortRaceVisualizer {
         return new Color(127, 140, 141);
     }
 
+    // Draws a progress bar with a moving car.
     private static class CarProgressBar extends JProgressBar {
+        // Color of the car.
         private final Color carColor;
 
+        // Creates a car progress bar.
         CarProgressBar(Color carColor) {
             super(0, 100);
             this.carColor = carColor;
@@ -95,9 +107,11 @@ public class SortRaceVisualizer {
             setStringPainted(false);
         }
 
+        // Draws the track, car, and status text.
         @Override
         protected void paintComponent(Graphics graphics) {
             Graphics2D g = (Graphics2D) graphics.create();
+            // Size and position of the track and car.
             int width = getWidth();
             int height = getHeight();
             int trackTop = 12;
@@ -107,6 +121,7 @@ public class SortRaceVisualizer {
             int carX = 12 + (int) ((width - carWidth - 28) * (getValue() / 100.0));
             int carY = trackTop + (trackHeight - carHeight) / 2;
 
+            // Draw the track and lane marks.
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.setColor(new Color(45, 52, 61));
             g.fillRoundRect(4, trackTop, width - 8, trackHeight, 12, 12);
@@ -122,6 +137,7 @@ public class SortRaceVisualizer {
                 g.fillRect(width - 25, y, 5, 6);
             }
 
+            // Draw the car windows and wheels.
             g.setColor(carColor);
             g.fillRoundRect(carX, carY + 5, carWidth, carHeight - 5, 8, 8);
             g.fillRoundRect(carX + 10, carY, 27, 14, 8, 8);
@@ -133,6 +149,7 @@ public class SortRaceVisualizer {
             g.fillOval(carX + carWidth - 17, carY + carHeight - 5, 10, 10);
             g.setColor(new Color(45, 52, 61));
             g.fillRect(4, height - 16, width - 8, 14);
+            // Shows the percentage or finish time.
             g.setColor(Color.WHITE);
             String status = getString().isEmpty() ? getValue() + "%" : getString();
             g.drawString(status, 12, height - 2);
@@ -140,7 +157,9 @@ public class SortRaceVisualizer {
         }
     }
 
+    // Runs all sorting tasks and waits for them to finish.
     public void runRace(List<SortTask> tasks) throws InterruptedException {
+        // Creates one worker thread for each task.
         ExecutorService ex = Executors.newFixedThreadPool(tasks.size());
         for (SortTask t : tasks) ex.submit(t);
         ex.shutdown();

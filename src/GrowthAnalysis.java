@@ -3,7 +3,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,22 +14,20 @@ public class GrowthAnalysis {
     private static final int[] REQUESTED_SIZES = {100, 200, 400, 800, 1200, 1600};
 
     private enum Algorithm {
-        INSERTION_ARRAY("Insertion ArrayList", false, 0),
-        INSERTION_LINKED("Insertion LinkedList", true, 0),
-        BUBBLE_ARRAY("Bubble ArrayList", false, 1),
-        BUBBLE_LINKED("Bubble LinkedList", true, 2),
-        MERGE_ARRAY("Merge ArrayList", false, 3),
-        MERGE_LINKED("Merge LinkedList", true, 4),
-        BUILT_IN_ARRAY("Built-in ArrayList", false, 5);
+        INSERTION_ARRAY("Insertion ArrayList", false),
+        INSERTION_LINKED("Insertion LinkedList", true),
+        BUBBLE_ARRAY("Bubble ArrayList", false),
+        BUBBLE_LINKED("Bubble LinkedList", true),
+        MERGE_ARRAY("Merge ArrayList", false),
+        MERGE_LINKED("Merge LinkedList", true),
+        BUILT_IN_ARRAY("Built-in ArrayList", false);
 
         private final String label;
         private final boolean linked;
-        private final int colorIndex;
 
-        Algorithm(String label, boolean linked, int colorIndex) {
+        Algorithm(String label, boolean linked) {
             this.label = label;
             this.linked = linked;
-            this.colorIndex = colorIndex;
         }
     }
 
@@ -38,12 +35,14 @@ public class GrowthAnalysis {
         private final int size;
         private final long operations;
 
+        // Stores one input size and its operation count.
         Point(int size, long operations) {
             this.size = size;
             this.operations = operations;
         }
     }
 
+    // Runs the growth test and creates the output files.
     public static void main(String[] args) throws IOException {
         CsvReader reader = new CsvReader();
         List<University> source = reader.loadAsArrayList(INPUT_FILE);
@@ -52,10 +51,12 @@ public class GrowthAnalysis {
             return;
         }
 
+        // Sort the source in reverse rank order for the test input.
         Comparator<University> byRank = Comparator.comparingInt(University::getRank);
         List<University> descending = new ArrayList<>(source);
         descending.sort(byRank.reversed());
         int[] sizes = usableSizes(descending.size());
+        // Test each algorithm with each usable input size.
         List<List<Point>> series = new ArrayList<>();
         for (Algorithm algorithm : Algorithm.values()) {
             List<Point> points = new ArrayList<>();
@@ -81,6 +82,7 @@ public class GrowthAnalysis {
         System.out.println("Graph written to " + SVG_FILE);
     }
 
+    // Keeps only input sizes that exist in the source data.
     private static int[] usableSizes(int sourceSize) {
         int count = 0;
         for (int size : REQUESTED_SIZES) {
@@ -89,6 +91,7 @@ public class GrowthAnalysis {
         return Arrays.copyOf(REQUESTED_SIZES, count);
     }
 
+    // Runs the selected sorting algorithm.
     private static void sort(Algorithm algorithm, List<University> data,
                             Comparator<University> comparator,
                             SortAlgorithms.SortCounter counter) {
@@ -103,6 +106,7 @@ public class GrowthAnalysis {
         }
     }
 
+    // Checks whether the list is sorted.
     private static <T> boolean isSorted(List<T> list, Comparator<T> comparator) {
         for (int i = 1; i < list.size(); i++) {
             if (comparator.compare(list.get(i - 1), list.get(i)) > 0) return false;
@@ -110,6 +114,7 @@ public class GrowthAnalysis {
         return true;
     }
 
+    // Writes operation counts to a CSV file.
     private static void writeCsv(List<List<Point>> series, int[] sizes) throws IOException {
         StringBuilder output = new StringBuilder("Algorithm,Size,Operations\n");
         Algorithm[] algorithms = Algorithm.values();
@@ -123,6 +128,7 @@ public class GrowthAnalysis {
         Files.writeString(Path.of(CSV_FILE), output.toString());
     }
 
+    // Creates the SVG line graph.
     private static void writeSvg(List<List<Point>> series, int[] sizes) throws IOException {
         int width = 1100;
         int height = 700;

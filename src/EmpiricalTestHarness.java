@@ -43,28 +43,33 @@ public class EmpiricalTestHarness {
             this.algorithm = algorithm;
         }
 
+        // Saves the results from one sorting run.
         void add(SortAlgorithms.SortCounter counter, long timeNs) {
             comparisons.add(counter.getComparisons());
             swaps.add(counter.getSwaps());
             times.add(timeNs / 1_000_000);
         }
 
+        // Finds the average value.
         long mean(List<Long> values) {
             long total = 0;
             for (long value : values) total += value;
             return total / values.size();
         }
 
+        // Finds the middle value after sorting the list.
         long median(List<Long> values) {
             List<Long> sorted = new ArrayList<>(values);
             Collections.sort(sorted);
             return sorted.get(sorted.size() / 2);
         }
 
+        // Finds the smallest value.
         long best(List<Long> values) {
             return Collections.min(values);
         }
 
+        // Finds the largest value.
         long worst(List<Long> values) {
             return Collections.max(values);
         }
@@ -73,8 +78,7 @@ public class EmpiricalTestHarness {
             return mean(times);
         }
 
-        // Stacked block per algorithm — never depends on terminal width,
-        // unlike a single very wide row.
+        // Prints the summary for one algorithm.
         void print() {
             System.out.println(algorithm);
             System.out.printf("  Comparisons : best=%,d  mean=%,d  worst=%,d  (median=%,d)%n",
@@ -86,6 +90,7 @@ public class EmpiricalTestHarness {
             System.out.println();
         }
 
+        // Creates one CSV row for this algorithm.
         String toCsvRow() {
             return algorithm + ","
                     + best(comparisons) + "," + mean(comparisons) + "," + median(comparisons)
@@ -95,11 +100,13 @@ public class EmpiricalTestHarness {
         }
     }
 
+    // Runs every algorithm 30 times and records the results.
     public void run(List<University> source) {
         Comparator<University> byRank = Comparator.comparingInt(University::getRank);
         SortAlgorithms sorter = new SortAlgorithms();
         List<Result> results = new ArrayList<>();
 
+        // Run every algorithm on a shuffled copy of the data.
         for (Algorithm algorithm : Algorithm.values()) {
             Result result = new Result(algorithm);
             for (int run = 0; run < RUNS; run++) {
@@ -118,6 +125,7 @@ public class EmpiricalTestHarness {
             results.add(result);
         }
 
+        // Print the collected results and the fastest algorithm.
         System.out.println("\nEmpirical results (30 randomized runs complete)");
         System.out.println("=".repeat(60));
         for (Result result : results) result.print();
@@ -132,9 +140,11 @@ public class EmpiricalTestHarness {
             + "are O(n^2) on randomized input. ArrayList avoids the indexed-access cost "
             + "that makes insertion sort especially expensive on LinkedList.");
 
+        // Save the results for later use.
         writeCsv(results);
     }
 
+    // Writes the results to a CSV file.
     private void writeCsv(List<Result> results) {
         try (FileWriter writer = new FileWriter(CSV_FILE)) {
                 writer.write("Algorithm,BestComparisons,MeanComparisons,MedianComparisons,WorstComparisons,"
@@ -149,11 +159,13 @@ public class EmpiricalTestHarness {
         }
     }
 
+    // Creates the list type needed by the algorithm.
     private List<University> copyFor(Algorithm algorithm, List<University> source) {
         if (algorithm.structure.equals("LinkedList")) return new LinkedList<>(source);
         return new ArrayList<>(source);
     }
 
+    // Selects the sorting method for an algorithm.
     private void sort(Algorithm algorithm, List<University> data, Comparator<University> comparator,
                       SortAlgorithms sorter, SortAlgorithms.SortCounter counter) {
         switch (algorithm) {
@@ -166,6 +178,7 @@ public class EmpiricalTestHarness {
         }
     }
 
+    // Checks whether the list is in sorted order.
     private <T> boolean isSorted(List<T> list, Comparator<T> comparator) {
         for (int i = 1; i < list.size(); i++) {
             if (comparator.compare(list.get(i - 1), list.get(i)) > 0) return false;
