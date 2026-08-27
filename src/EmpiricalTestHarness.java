@@ -103,6 +103,7 @@ public class EmpiricalTestHarness {
         for (Algorithm algorithm : Algorithm.values()) {
             Result result = new Result(algorithm);
             for (int run = 0; run < RUNS; run++) {
+                System.out.printf("Running %-30s: %2d/%d%n", algorithm, run + 1, RUNS);
                 List<University> data = copyFor(algorithm, source);
                 Collections.shuffle(data);
                 SortAlgorithms.SortCounter counter = new SortAlgorithms.SortCounter();
@@ -117,7 +118,7 @@ public class EmpiricalTestHarness {
             results.add(result);
         }
 
-        System.out.println("\nEmpirical results (30 randomized runs)");
+        System.out.println("\nEmpirical results (30 randomized runs complete)");
         System.out.println("=".repeat(60));
         for (Result result : results) result.print();
 

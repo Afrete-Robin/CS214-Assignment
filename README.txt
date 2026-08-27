@@ -19,8 +19,10 @@ briefly after each progress update so the sorting activity is easier to see.
 
 Option 5 demonstrates bubble sort. Option 6 demonstrates merge sort on both
 list structures and Java's built-in sort. Option 7 runs all seven required
-algorithm/data-structure combinations 30 times, shuffling the data before
-every run, and reports comparison and swap counts as best/mean/median/worst.
+algorithm/data-structure combinations 30 times, showing the current algorithm
+and run number while running, then printing the complete results summary.
+It shuffles the data before every run and reports comparison and swap counts as
+best/mean/median/worst.
 
 SortAlgorithms.java contains the insertion, bubble, merge, and built-in sort
 APIs with their comparison/swap counters.
@@ -36,6 +38,8 @@ algorithm/data-structure combinations.
 The benchmark reports comparison, swap, and elapsed-time values as
 best/mean/median/worst in the console and CSV output. It randomizes the dataset
 before every run for all seven algorithm/data-structure combinations.
+Built-in sort swaps are not measured, rather than being a genuine zero, because
+Collections.sort does not expose its internal write/swap operations.
 
 Theoretical summary: insertion sort and bubble sort are O(n^2) on randomized
 data. Merge sort and Java's built-in object sort are O(n log n) in typical and
