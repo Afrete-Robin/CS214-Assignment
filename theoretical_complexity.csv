@@ -1,0 +1,49 @@
+Algorithm,Size,TheoreticalOperations,Complexity
+Insertion ArrayList,100,10000,O(n^2)
+Insertion ArrayList,200,40000,O(n^2)
+Insertion ArrayList,400,160000,O(n^2)
+Insertion ArrayList,800,640000,O(n^2)
+Insertion ArrayList,1200,1440000,O(n^2)
+Insertion ArrayList,1600,2560000,O(n^2)
+Insertion LinkedList,100,1000000,O(n^3) in this indexed implementation
+Insertion LinkedList,200,8000000,O(n^3) in this indexed implementation
+Insertion LinkedList,400,64000000,O(n^3) in this indexed implementation
+Insertion LinkedList,800,512000000,O(n^3) in this indexed implementation
+Insertion LinkedList,1200,1728000000,O(n^3) in this indexed implementation
+Insertion LinkedList,1600,4096000000,O(n^3) in this indexed implementation
+Bubble ArrayList,100,10000,O(n^2)
+Bubble ArrayList,200,40000,O(n^2)
+Bubble ArrayList,400,160000,O(n^2)
+Bubble ArrayList,800,640000,O(n^2)
+Bubble ArrayList,1200,1440000,O(n^2)
+Bubble ArrayList,1600,2560000,O(n^2)
+Bubble LinkedList,100,1000000,O(n^3) in this indexed implementation
+Bubble LinkedList,200,8000000,O(n^3) in this indexed implementation
+Bubble LinkedList,400,64000000,O(n^3) in this indexed implementation
+Bubble LinkedList,800,512000000,O(n^3) in this indexed implementation
+Bubble LinkedList,1200,1728000000,O(n^3) in this indexed implementation
+Bubble LinkedList,1600,4096000000,O(n^3) in this indexed implementation
+Merge ArrayList,100,700,O(n log n)
+Merge ArrayList,200,1600,O(n log n)
+Merge ArrayList,400,3600,O(n log n)
+Merge ArrayList,800,8000,O(n log n)
+Merge ArrayList,1200,13200,O(n log n)
+Merge ArrayList,1600,17600,O(n log n)
+Merge LinkedList,100,70000,O(n^2 log n) in this indexed implementation
+Merge LinkedList,200,320000,O(n^2 log n) in this indexed implementation
+Merge LinkedList,400,1440000,O(n^2 log n) in this indexed implementation
+Merge LinkedList,800,6400000,O(n^2 log n) in this indexed implementation
+Merge LinkedList,1200,15840000,O(n^2 log n) in this indexed implementation
+Merge LinkedList,1600,28160000,O(n^2 log n) in this indexed implementation
+Built-in ArrayList,100,700,O(n log n)
+Built-in ArrayList,200,1600,O(n log n)
+Built-in ArrayList,400,3600,O(n log n)
+Built-in ArrayList,800,8000,O(n log n)
+Built-in ArrayList,1200,13200,O(n log n)
+Built-in ArrayList,1600,17600,O(n log n)
+Built-in LinkedList,100,700,O(n log n)
+Built-in LinkedList,200,1600,O(n log n)
+Built-in LinkedList,400,3600,O(n log n)
+Built-in LinkedList,800,8000,O(n log n)
+Built-in LinkedList,1200,13200,O(n log n)
+Built-in LinkedList,1600,17600,O(n log n)

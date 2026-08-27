@@ -42,7 +42,7 @@ public class SortAlgorithms {
         insertionSortInternal(list, comparator, null, progress);
     }
 
-    // Shared insertion sort code.
+    //  insertion sort algorithm.
     private <T> void insertionSortInternal(List<T> list, Comparator<T> comparator,
                                             SortCounter counter, java.util.function.IntConsumer progress){
         // Number of items in the list.
@@ -75,7 +75,7 @@ public class SortAlgorithms {
         bubbleSortArrayList(list, comparator, null, counter);
     }
 
-    // Shared bubble sort code.
+    //  bubble sort algorithm.
     private <T> void bubbleSortArrayList(List<T> list, Comparator<T> comparator,
                                          java.util.function.IntConsumer progress, SortCounter counter){
         int n = list.size();
@@ -145,7 +145,7 @@ public class SortAlgorithms {
         if (progress != null) progress.accept(100);
     }
 
-    // Recursively splits and joins the list.
+    // MergeSort Algorithm
     private <T> void mergeSortInternal(List<T> list, Comparator<T> comparator,
                                        SortCounter counter, ProgressState state,
                                        boolean linkedListPath) {

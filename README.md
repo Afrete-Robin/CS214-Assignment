@@ -42,6 +42,7 @@ folder. Open the SVG file in a browser to view the graph.
 6. Run merge sort and Java's built-in sort.
 7. Run the empirical test 30 times for each algorithm and list type.
 8. Open the Swing sorting race visualizer.
+9. Run the measured and theoretical growth analysis.
 0. Exit the program.
 
 ## Files
@@ -55,8 +56,8 @@ folder. Open the SVG file in a browser to view the graph.
 - `SortRaceVisualizer.java` creates the Swing window and progress bars.
 - `EmpiricalTestHarness.java` runs the 30-run benchmark and writes
 	`empirical_results.csv`.
-- `GrowthAnalysis.java` measures operation growth at several input sizes and
-	writes the CSV and SVG graph.
+- `GrowthAnalysis.java` measures operation growth and creates theoretical
+	worst-case curves at several input sizes.
 - `TestReader.java`, `TestSort.java`, and `TestSortGeneric.java` are small test
 	programs for the reader and insertion sort.
 
@@ -79,17 +80,39 @@ best, mean, median, and worst values for comparisons, writes/swaps, and time.
 Built-in sort writes/swaps are shown as zero because Java's `Collections.sort`
 does not expose those internal operations to the counter.
 
-## Complexity Summary
+## Part 3: Empirical Results
+
+The empirical test in `EmpiricalTestHarness.java` measures real elapsed time on
+30 shuffled runs. Its results are written to `empirical_results.csv` and include
+best, mean, median, and worst values for time, comparisons, and writes/swaps.
+This is the measured or empirical data, not a theoretical curve.
+
+## Part 4: Theoretical Results
 
 `GrowthAnalysis` sorts reverse-ordered input at sizes 100, 200, 400, 800, 1200,
-and 1600 when those sizes are available in the CSV file.
+and 1600 when those sizes are available in the CSV file. It creates two types
+of output:
 
-| Algorithm      | ArrayList  | LinkedList      |
-|----------------|------------|-----------------|
-| Insertion sort | O(n^2)     | O(n^2)          |
-| Bubble sort    | O(n^2)     | O(n^2)          |
-| Merge sort     | O(n log n) | O(n log n)      |
-| Built-in sort  | O(n log n) | Not benchmarked |
+- `complexity_growth.csv` and `complexity_growth.svg` contain measured
+	operation counts from the descending input test.
+- `theoretical_complexity.csv` and `theoretical_complexity.svg` contain the
+	eight theoretical worst-case curves. The SVG title clearly marks this as
+	the theoretical Part 4 graph and says that its values are estimated
+	operations, not real running time.
+
+The theoretical graph includes all four algorithms on both list structures:
+
+| Algorithm      | ArrayList | LinkedList |
+|---|---|---|
+| Insertion sort | O(n^2) | O(n^3) in this indexed implementation |
+| Bubble sort | O(n^2) | O(n^3) in this indexed implementation |
+| Merge sort | O(n log n) | O(n^2 log n) in this indexed implementation |
+| Built-in sort | O(n log n) | O(n log n) |
+
+The LinkedList results are higher because the sorting code uses `get()` and
+`set()` by index. Those operations require traversal on a LinkedList. A merge
+sort or insertion sort written with list iterators could have different
+complexity, but the table describes the code in this project.
 
 ## CSV Data Handling
 

@@ -1,3 +1,5 @@
+// IOException handles file errors.
+import java.io.IOException;
 // ArrayList stores data in a resizable list.
 import java.util.ArrayList;
 // Collections provides list operations such as shuffle.
@@ -35,6 +37,7 @@ public class Main {
                 case 6 -> runMergeAndBuiltInDemo();
                 case 7 -> runEmpiricalTest();
                 case 8 -> runRaceVisualizer();
+                case 9 -> runGrowthAnalysis();
                 case 0 -> {
                     running = false;
                     System.out.println("Goodbye.");
@@ -71,6 +74,7 @@ public class Main {
         System.out.println(" 6. Run Merge Sort / built-in sort demo");
         System.out.println(" 7. Run full empirical test harness (30 runs)");
         System.out.println(" 8. Run sorting race visualizer (Swing)");
+        System.out.println(" 9. Run operation growth analysis");
         System.out.println(" 0. Exit");
         System.out.print("Choose an option: ");
     }
@@ -339,6 +343,15 @@ public class Main {
             System.out.println("Race finished — see GUI for timings.");
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    // Runs the Part 4 growth analysis.
+    private static void runGrowthAnalysis() {
+        try {
+            GrowthAnalysis.main(new String[0]);
+        } catch (IOException e) {
+            System.out.println("Could not write growth analysis files: " + e.getMessage());
         }
     }
 

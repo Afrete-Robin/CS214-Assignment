@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700">
+<rect width="100%" height="100%" fill="white"/>
+<text x="90" y="30" font-family="sans-serif" font-size="20" font-weight="bold">Theoretical Part 4: Worst-Case Big-O</text>
+<text x="90" y="48" font-family="sans-serif" font-size="12">Estimated operations, not real running time</text>
+<line x1="90" y1="630" x2="850" y2="630" stroke="#333"/>
+<line x1="90" y1="55" x2="90" y2="630" stroke="#333"/>
+<text x="470" y="680" text-anchor="middle" font-family="sans-serif">Input size (n)</text>
+<text transform="translate(20 342) rotate(-90)" text-anchor="middle" font-family="sans-serif">Theoretical operations</text>
+<line x1="90" y1="55" x2="90" y2="630" stroke="#e5e7eb"/>
+<text x="90" y="652" text-anchor="middle" font-family="sans-serif" font-size="12">100</text>
+<line x1="242" y1="55" x2="242" y2="630" stroke="#e5e7eb"/>
+<text x="242" y="652" text-anchor="middle" font-family="sans-serif" font-size="12">200</text>
+<line x1="394" y1="55" x2="394" y2="630" stroke="#e5e7eb"/>
+<text x="394" y="652" text-anchor="middle" font-family="sans-serif" font-size="12">400</text>
+<line x1="546" y1="55" x2="546" y2="630" stroke="#e5e7eb"/>
+<text x="546" y="652" text-anchor="middle" font-family="sans-serif" font-size="12">800</text>
+<line x1="698" y1="55" x2="698" y2="630" stroke="#e5e7eb"/>
+<text x="698" y="652" text-anchor="middle" font-family="sans-serif" font-size="12">1200</text>
+<line x1="850" y1="55" x2="850" y2="630" stroke="#e5e7eb"/>
+<text x="850" y="652" text-anchor="middle" font-family="sans-serif" font-size="12">1600</text>
+<polyline fill="none" stroke="#2563eb" stroke-width="3" points="90.0,630.0 242.0,630.0 394.0,630.0 546.0,629.9 698.0,629.8 850.0,629.6 "/>
+<line x1="870" y1="55" x2="898" y2="55" stroke="#2563eb" stroke-width="3"/>
+<text x="908" y="60" font-family="sans-serif" font-size="12">Insertion ArrayList (O(n^2))</text>
+<polyline fill="none" stroke="#1d4ed8" stroke-width="3" points="90.0,629.9 242.0,628.9 394.0,621.0 546.0,558.1 698.0,387.4 850.0,55.0 "/>
+<line x1="870" y1="83" x2="898" y2="83" stroke="#1d4ed8" stroke-width="3"/>
+<text x="908" y="88" font-family="sans-serif" font-size="12">Insertion LinkedList (O(n^3) in this indexed implementation)</text>
+<polyline fill="none" stroke="#dc2626" stroke-width="3" points="90.0,630.0 242.0,630.0 394.0,630.0 546.0,629.9 698.0,629.8 850.0,629.6 "/>
+<line x1="870" y1="111" x2="898" y2="111" stroke="#dc2626" stroke-width="3"/>
+<text x="908" y="116" font-family="sans-serif" font-size="12">Bubble ArrayList (O(n^2))</text>
+<polyline fill="none" stroke="#b91c1c" stroke-width="3" points="90.0,629.9 242.0,628.9 394.0,621.0 546.0,558.1 698.0,387.4 850.0,55.0 "/>
+<line x1="870" y1="139" x2="898" y2="139" stroke="#b91c1c" stroke-width="3"/>
+<text x="908" y="144" font-family="sans-serif" font-size="12">Bubble LinkedList (O(n^3) in this indexed implementation)</text>
+<polyline fill="none" stroke="#059669" stroke-width="3" points="90.0,630.0 242.0,630.0 394.0,630.0 546.0,630.0 698.0,630.0 850.0,630.0 "/>
+<line x1="870" y1="167" x2="898" y2="167" stroke="#059669" stroke-width="3"/>
+<text x="908" y="172" font-family="sans-serif" font-size="12">Merge ArrayList (O(n log n))</text>
+<polyline fill="none" stroke="#047857" stroke-width="3" points="90.0,630.0 242.0,630.0 394.0,629.8 546.0,629.1 698.0,627.8 850.0,626.0 "/>
+<line x1="870" y1="195" x2="898" y2="195" stroke="#047857" stroke-width="3"/>
+<text x="908" y="200" font-family="sans-serif" font-size="12">Merge LinkedList (O(n^2 log n) in this indexed implementation)</text>
+<polyline fill="none" stroke="#7c3aed" stroke-width="3" points="90.0,630.0 242.0,630.0 394.0,630.0 546.0,630.0 698.0,630.0 850.0,630.0 "/>
+<line x1="870" y1="223" x2="898" y2="223" stroke="#7c3aed" stroke-width="3"/>
+<text x="908" y="228" font-family="sans-serif" font-size="12">Built-in ArrayList (O(n log n))</text>
+<polyline fill="none" stroke="#6d28d9" stroke-width="3" points="90.0,630.0 242.0,630.0 394.0,630.0 546.0,630.0 698.0,630.0 850.0,630.0 "/>
+<line x1="870" y1="251" x2="898" y2="251" stroke="#6d28d9" stroke-width="3"/>
+<text x="908" y="256" font-family="sans-serif" font-size="12">Built-in LinkedList (O(n log n))</text>
+</svg>
