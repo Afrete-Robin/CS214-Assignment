@@ -1,0 +1,188 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
+public class GrowthAnalysis {
+    private static final String INPUT_FILE = "World University Rankings 2023-Cleaned.csv";
+    private static final String CSV_FILE = "complexity_growth.csv";
+    private static final String SVG_FILE = "complexity_growth.svg";
+    private static final int[] REQUESTED_SIZES = {100, 200, 400, 800, 1200, 1600};
+
+    private enum Algorithm {
+        INSERTION_ARRAY("Insertion ArrayList", false, 0),
+        INSERTION_LINKED("Insertion LinkedList", true, 0),
+        BUBBLE_ARRAY("Bubble ArrayList", false, 1),
+        BUBBLE_LINKED("Bubble LinkedList", true, 2),
+        MERGE_ARRAY("Merge ArrayList", false, 3),
+        MERGE_LINKED("Merge LinkedList", true, 4),
+        BUILT_IN_ARRAY("Built-in ArrayList", false, 5);
+
+        private final String label;
+        private final boolean linked;
+        private final int colorIndex;
+
+        Algorithm(String label, boolean linked, int colorIndex) {
+            this.label = label;
+            this.linked = linked;
+            this.colorIndex = colorIndex;
+        }
+    }
+
+    private static class Point {
+        private final int size;
+        private final long operations;
+
+        Point(int size, long operations) {
+            this.size = size;
+            this.operations = operations;
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        CsvReader reader = new CsvReader();
+        List<University> source = reader.loadAsArrayList(INPUT_FILE);
+        if (source.isEmpty()) {
+            System.out.println("CSV empty or not found: " + INPUT_FILE);
+            return;
+        }
+
+        Comparator<University> byRank = Comparator.comparingInt(University::getRank);
+        List<University> descending = new ArrayList<>(source);
+        descending.sort(byRank.reversed());
+        int[] sizes = usableSizes(descending.size());
+        List<List<Point>> series = new ArrayList<>();
+        for (Algorithm algorithm : Algorithm.values()) {
+            List<Point> points = new ArrayList<>();
+            for (int size : sizes) {
+                List<University> data = algorithm.linked
+                        ? new LinkedList<>(descending.subList(0, size))
+                        : new ArrayList<>(descending.subList(0, size));
+                SortAlgorithms.SortCounter counter = new SortAlgorithms.SortCounter();
+                sort(algorithm, data, byRank, counter);
+                if (!isSorted(data, byRank)) {
+                    throw new IllegalStateException(algorithm.label + " failed for n=" + size);
+                }
+                points.add(new Point(size, counter.getOperations()));
+            }
+            series.add(points);
+        }
+
+        writeCsv(series, sizes);
+        writeSvg(series, sizes);
+        System.out.println("Part 4 growth analysis complete.");
+        System.out.println("Input: descending rank order; sizes: " + Arrays.toString(sizes));
+        System.out.println("CSV written to " + CSV_FILE);
+        System.out.println("Graph written to " + SVG_FILE);
+    }
+
+    private static int[] usableSizes(int sourceSize) {
+        int count = 0;
+        for (int size : REQUESTED_SIZES) {
+            if (size <= sourceSize) count++;
+        }
+        return Arrays.copyOf(REQUESTED_SIZES, count);
+    }
+
+    private static void sort(Algorithm algorithm, List<University> data,
+                            Comparator<University> comparator,
+                            SortAlgorithms.SortCounter counter) {
+        SortAlgorithms sorter = new SortAlgorithms();
+        switch (algorithm) {
+            case INSERTION_ARRAY, INSERTION_LINKED -> sorter.insertionSort(data, comparator, counter);
+            case BUBBLE_ARRAY -> sorter.bubbleSortArrayList(data, comparator, counter);
+            case BUBBLE_LINKED -> sorter.bubbleSortLinkedList(data, comparator, counter);
+            case MERGE_ARRAY -> sorter.mergeSortArrayList(data, comparator, counter);
+            case MERGE_LINKED -> sorter.mergeSortLinkedList(data, comparator, counter);
+            case BUILT_IN_ARRAY -> sorter.builtInSort(data, comparator, counter);
+        }
+    }
+
+    private static <T> boolean isSorted(List<T> list, Comparator<T> comparator) {
+        for (int i = 1; i < list.size(); i++) {
+            if (comparator.compare(list.get(i - 1), list.get(i)) > 0) return false;
+        }
+        return true;
+    }
+
+    private static void writeCsv(List<List<Point>> series, int[] sizes) throws IOException {
+        StringBuilder output = new StringBuilder("Algorithm,Size,Operations\n");
+        Algorithm[] algorithms = Algorithm.values();
+        for (int i = 0; i < algorithms.length; i++) {
+            for (Point point : series.get(i)) {
+                output.append(algorithms[i].label).append(',')
+                        .append(point.size).append(',')
+                        .append(point.operations).append('\n');
+            }
+        }
+        Files.writeString(Path.of(CSV_FILE), output.toString());
+    }
+
+    private static void writeSvg(List<List<Point>> series, int[] sizes) throws IOException {
+        int width = 1100;
+        int height = 700;
+        int left = 90;
+        int top = 55;
+        int right = 260;
+        int bottom = 70;
+        long maxOperations = 1;
+        for (List<Point> points : series) {
+            for (Point point : points) maxOperations = Math.max(maxOperations, point.operations);
+        }
+        StringBuilder svg = new StringBuilder();
+        svg.append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"")
+                .append(width).append("\" height=\"").append(height)
+                .append("\" viewBox=\"0 0 ").append(width).append(' ').append(height).append("\">\n")
+                .append("<rect width=\"100%\" height=\"100%\" fill=\"white\"/>\n")
+                .append("<text x=\"90\" y=\"30\" font-family=\"sans-serif\" font-size=\"20\" font-weight=\"bold\">Part 4: Operation Growth on Descending Input</text>\n");
+
+        int chartWidth = width - left - right;
+        int chartHeight = height - top - bottom;
+        svg.append("<line x1=\"").append(left).append("\" y1=\"").append(top + chartHeight)
+                .append("\" x2=\"").append(left + chartWidth).append("\" y2=\"").append(top + chartHeight)
+                .append("\" stroke=\"#333\"/>\n")
+                .append("<line x1=\"").append(left).append("\" y1=\"").append(top)
+                .append("\" x2=\"").append(left).append("\" y2=\"").append(top + chartHeight)
+                .append("\" stroke=\"#333\"/>\n")
+                .append("<text x=\"").append(left + chartWidth / 2).append("\" y=\"").append(height - 20)
+                .append("\" text-anchor=\"middle\" font-family=\"sans-serif\">Input size (n)</text>\n")
+                .append("<text transform=\"translate(20 ").append(top + chartHeight / 2)
+                .append(") rotate(-90)\" text-anchor=\"middle\" font-family=\"sans-serif\">Comparisons + writes/swaps</text>\n");
+
+        for (int i = 0; i < sizes.length; i++) {
+            int x = left + (sizes.length == 1 ? chartWidth / 2 : i * chartWidth / (sizes.length - 1));
+            svg.append("<line x1=\"").append(x).append("\" y1=\"").append(top)
+                    .append("\" x2=\"").append(x).append("\" y2=\"").append(top + chartHeight)
+                    .append("\" stroke=\"#e5e7eb\"/>\n")
+                    .append("<text x=\"").append(x).append("\" y=\"").append(top + chartHeight + 22)
+                    .append("\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"12\">")
+                    .append(sizes[i]).append("</text>\n");
+        }
+
+        String[] colors = {"#2563eb", "#1d4ed8", "#dc2626", "#b91c1c", "#059669", "#047857", "#7c3aed"};
+        for (int i = 0; i < series.size(); i++) {
+            StringBuilder points = new StringBuilder();
+            for (int j = 0; j < series.get(i).size(); j++) {
+                Point point = series.get(i).get(j);
+                double x = left + (sizes.length == 1 ? chartWidth / 2.0 : j * chartWidth / (double) (sizes.length - 1));
+                double y = top + chartHeight - point.operations * chartHeight / (double) maxOperations;
+                points.append(String.format(java.util.Locale.ROOT, "%.1f,%.1f ", x, y));
+            }
+            svg.append("<polyline fill=\"none\" stroke=\"").append(colors[i])
+                    .append("\" stroke-width=\"3\" points=\"").append(points).append("\"/>\n");
+            int legendY = top + i * 28;
+            svg.append("<line x1=\"").append(left + chartWidth + 20).append("\" y1=\"").append(legendY)
+                    .append("\" x2=\"").append(left + chartWidth + 48).append("\" y2=\"").append(legendY)
+                    .append("\" stroke=\"").append(colors[i]).append("\" stroke-width=\"3\"/>\n")
+                    .append("<text x=\"").append(left + chartWidth + 58).append("\" y=\"").append(legendY + 5)
+                    .append("\" font-family=\"sans-serif\" font-size=\"12\">").append(Algorithm.values()[i].label).append("</text>\n");
+        }
+        svg.append("</svg>\n");
+        Files.writeString(Path.of(SVG_FILE), svg.toString());
+    }
+}

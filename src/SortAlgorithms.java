@@ -2,7 +2,6 @@ import java.util.Comparator;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class SortAlgorithms {
     public static class SortCounter {
@@ -31,16 +30,6 @@ public class SortAlgorithms {
 
     private <T> void insertionSortInternal(List<T> list, Comparator<T> comparator,
                                             SortCounter counter, java.util.function.IntConsumer progress){
-        if (!(list instanceof java.util.RandomAccess)) {
-            List<T> working = new ArrayList<>(list);
-            insertionSortInternal(working, comparator, counter, progress);
-            ListIterator<T> destination = list.listIterator();
-            for (T value : working) {
-                destination.next();
-                destination.set(value);
-            }
-            return;
-        }
         int n = list.size();
         for (int i = 1; i < n; i++) {
             T key = list.get(i);
@@ -101,28 +90,91 @@ public class SortAlgorithms {
 
     private <T> void bubbleSortLinkedList(List<T> list, Comparator<T> comparator,
                                           java.util.function.IntConsumer progress, SortCounter counter){
-        java.util.ArrayList<T> temp = new java.util.ArrayList<>(list);
-        bubbleSortArrayList(temp, comparator, progress, counter);
-        list.clear();
-        list.addAll(temp);
+        bubbleSortArrayList(list, comparator, progress, counter);
     }
 
     public <T> void mergeSortArrayList(List<T> list, Comparator<T> comparator, SortCounter counter){
-        MergeSort.sortArrayList(list, comparator, counter);
+        mergeSort(list, comparator, counter, null, false);
     }
 
     public <T> void mergeSortArrayList(List<T> list, Comparator<T> comparator,
                                        java.util.function.IntConsumer progress){
-        MergeSort.sortArrayList(list, comparator, null, progress);
+        mergeSort(list, comparator, null, progress, false);
     }
 
     public <T> void mergeSortLinkedList(List<T> list, Comparator<T> comparator, SortCounter counter){
-        MergeSort.sortLinkedList(list, comparator, counter);
+        mergeSort(list, comparator, counter, null, true);
     }
 
     public <T> void mergeSortLinkedList(List<T> list, Comparator<T> comparator,
                                         java.util.function.IntConsumer progress){
-        MergeSort.sortLinkedList(list, comparator, null, progress);
+        mergeSort(list, comparator, null, progress, true);
+    }
+
+    private <T> void mergeSort(List<T> list, Comparator<T> comparator,
+                               SortCounter counter, java.util.function.IntConsumer progress,
+                               boolean linkedListPath) {
+        ProgressState state = new ProgressState(list.size(), progress);
+        mergeSortInternal(list, comparator, counter, state, linkedListPath);
+        if (progress != null) progress.accept(100);
+    }
+
+    private <T> void mergeSortInternal(List<T> list, Comparator<T> comparator,
+                                       SortCounter counter, ProgressState state,
+                                       boolean linkedListPath) {
+        if (list.size() < 2) return;
+        int middle = list.size() / 2;
+        List<T> left = linkedListPath
+                ? new java.util.LinkedList<>(list.subList(0, middle))
+                : new ArrayList<>(list.subList(0, middle));
+        List<T> right = linkedListPath
+                ? new java.util.LinkedList<>(list.subList(middle, list.size()))
+                : new ArrayList<>(list.subList(middle, list.size()));
+        mergeSortInternal(left, comparator, counter, state, linkedListPath);
+        mergeSortInternal(right, comparator, counter, state, linkedListPath);
+
+        int leftIndex = 0;
+        int rightIndex = 0;
+        int outputIndex = 0;
+        while (leftIndex < left.size() && rightIndex < right.size()) {
+            if (counter != null) counter.comparison();
+            if (comparator.compare(left.get(leftIndex), right.get(rightIndex)) <= 0) {
+                list.set(outputIndex++, left.get(leftIndex++));
+            } else {
+                list.set(outputIndex++, right.get(rightIndex++));
+            }
+            if (counter != null) counter.swap();
+            state.reportWrite();
+        }
+        while (leftIndex < left.size()) {
+            list.set(outputIndex++, left.get(leftIndex++));
+            if (counter != null) counter.swap();
+            state.reportWrite();
+        }
+        while (rightIndex < right.size()) {
+            list.set(outputIndex++, right.get(rightIndex++));
+            if (counter != null) counter.swap();
+            state.reportWrite();
+        }
+    }
+
+    private static class ProgressState {
+        private final int totalWrites;
+        private final java.util.function.IntConsumer progress;
+        private int writes;
+
+        ProgressState(int size, java.util.function.IntConsumer progress) {
+            int levels = 32 - Integer.numberOfLeadingZeros(Math.max(1, size));
+            totalWrites = Math.max(1, size * levels);
+            this.progress = progress;
+        }
+
+        void reportWrite() {
+            if (progress != null) {
+                writes++;
+                progress.accept(Math.min(99, (writes * 100) / totalWrites));
+            }
+        }
     }
 
     public <T> void builtInSort(List<T> list, Comparator<T> comparator, SortCounter counter){

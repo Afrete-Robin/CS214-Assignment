@@ -5,12 +5,29 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SortRaceVisualizer {
     private JFrame frame;
     private JPanel panel;
     private List<JProgressBar> bars = new ArrayList<>();
     private List<JLabel> labels = new ArrayList<>();
+
+    public static class ProgressTracker {
+        private final Map<String, Integer> progressByTask = new HashMap<>();
+
+        public synchronized void update(String taskName, int progress, JProgressBar progressBar) {
+            int previous = progressByTask.getOrDefault(taskName, -1);
+            if (progress <= previous) return;
+            progressByTask.put(taskName, progress);
+            SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
+        }
+
+        public synchronized Map<String, Integer> snapshot() {
+            return new HashMap<>(progressByTask);
+        }
+    }
 
     public SortRaceVisualizer() {
         try {

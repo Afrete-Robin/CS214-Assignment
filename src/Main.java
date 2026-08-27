@@ -5,14 +5,6 @@ import java.util.List;
 import java.util.Scanner;
 import javax.swing.JProgressBar;
 
-/**
- * Console menu driver for the CS214 Assignment 1 sorting project.
- * Ties together each member's work behind one entry point so the whole
- * assignment can be demoed without switching between files.
- *
- * Provides CSV loading, sorting demonstrations, the empirical harness, and
- * the Swing race visualizer for the complete assignment.
- */
 public class Main {
 
     private static final String CSV_FILE = "World University Rankings 2023-Cleaned.csv";
@@ -59,9 +51,9 @@ public class Main {
         System.out.println("=========================================");
         System.out.println(" CS214 Assignment 1 - Sorting Algorithms");
         System.out.println("=========================================");
-        System.out.println(" 1. Print ALL records from CSV (neat output)");
-        System.out.println(" 2. Load dataset into ArrayList + LinkedList (print counts)");
-        System.out.println(" 3. Run Insertion Sort demo ");
+        System.out.println(" 1. Print ALL records from CSV ");
+        System.out.println(" 2. Load dataset into ArrayList + LinkedList");
+        System.out.println(" 3. Run Insertion Sort");
         System.out.println(" 4. Prove generic sort works on List<Integer>");
         System.out.println(" 5. Run Bubble Sort demo");
         System.out.println(" 6. Run Merge Sort / built-in sort demo");
@@ -286,6 +278,7 @@ public class Main {
         Collections.shuffle(shuffled);
 
         SortRaceVisualizer viz = new SortRaceVisualizer();
+        SortRaceVisualizer.ProgressTracker progressTracker = new SortRaceVisualizer.ProgressTracker();
         SortAlgorithms alg = new SortAlgorithms();
 
         String[] names = {
@@ -308,7 +301,7 @@ public class Main {
                 ? new java.util.LinkedList<>(shuffled)
                 : new java.util.ArrayList<>(shuffled);
             JProgressBar progressBar = viz.addRunner(names[i]);
-            tasks.add(new SortTask(names[i], data, byRank, alg, progressBar, algorithms[i]));
+            tasks.add(new SortTask(names[i], data, byRank, alg, progressBar, algorithms[i], progressTracker));
         }
 
         try {

@@ -11,8 +11,8 @@ FILES
 - TestSort.java / TestSortGeneric.java — test files demonstrating correctness
 
 HOW TO RUN
-javac -d out src\*.java
-java -cp out Main
+javac -d classes src\*.java
+java -cp classes Main
 
 Choose option 8 from the menu to open the sorting race. The race now pauses
 briefly after each progress update so the sorting activity is easier to see.
@@ -22,15 +22,32 @@ list structures and Java's built-in sort. Option 7 runs all seven required
 algorithm/data-structure combinations 30 times, shuffling the data before
 every run, and reports comparison and swap counts as best/mean/median/worst.
 
-SortAlgorithms.java contains the shared insertion/bubble APIs and counters.
-MergeSort.java contains merge sort for both list structures.
+SortAlgorithms.java contains the insertion, bubble, merge, and built-in sort
+APIs with their comparison/swap counters.
 EmpiricalTestHarness.java runs and summarizes the 30-run benchmark.
+
+GrowthAnalysis.java implements Part 4 growth analysis. Run it with:
+java -cp classes GrowthAnalysis
+
+It sorts descending inputs at increasing sizes and writes complexity_growth.csv
+and complexity_growth.svg, plotting comparisons plus writes/swaps for all seven
+algorithm/data-structure combinations.
+
+The benchmark reports comparison, swap, and elapsed-time values as
+best/mean/median/worst in the console and CSV output. It randomizes the dataset
+before every run for all seven algorithm/data-structure combinations.
 
 Theoretical summary: insertion sort and bubble sort are O(n^2) on randomized
 data. Merge sort and Java's built-in object sort are O(n log n) in typical and
 worst-case comparison behavior. ArrayList generally performs better for
 indexed operations, while merge sort stays close to O(n log n) for both list
 structures because it uses array-backed working lists.
+
+Worst-case complexity summary:
+- Insertion sort: O(n^2) on ArrayList and LinkedList
+- Bubble sort: O(n^2) on ArrayList and LinkedList
+- Merge sort: O(n log n) on ArrayList and LinkedList
+- Built-in sort: O(n log n) on ArrayList (the benchmarked structure)
 
 For the original insertion-sort test only:
 javac University.java CsvReader.java SortAlgorithms.java TestSort.java

@@ -5,8 +5,8 @@
 From the project folder in PowerShell:
 
 ```powershell
-javac -d out src\*.java
-java -cp out Main
+javac -d classes src\*.java
+java -cp classes Main
 ```
 
 Choose option `8` from the menu to open the sorting race. Keep the CSV file in
@@ -17,14 +17,34 @@ and Java's built-in sort, and option `7` runs all seven algorithm/data-structure
 combinations 30 times. Every benchmark run starts with a newly shuffled copy
 of the dataset.
 
-`SortAlgorithms.java` contains the shared insertion/bubble APIs and counters;
-`MergeSort.java` contains the dedicated merge-sort implementation for both
-list structures; `EmpiricalTestHarness.java` runs and summarizes the benchmark.
+`SortAlgorithms.java` contains the insertion, bubble, merge, and built-in sort
+APIs with their comparison/swap counters; `EmpiricalTestHarness.java` runs and
+summarizes the benchmark.
 
-The benchmark reports comparison and swap counts as best/mean/median/worst.
+Part 4 growth analysis is implemented in `GrowthAnalysis.java`. Run it with:
+
+```powershell
+java -cp classes GrowthAnalysis
+```
+
+It sorts descending inputs at increasing sizes and writes `complexity_growth.csv`
+and `complexity_growth.svg`, plotting comparisons plus writes/swaps for all
+seven algorithm/data-structure combinations.
+
+The benchmark reports comparison, swap, and elapsed-time values as
+best/mean/median/worst in the console and CSV output. It randomizes the dataset
+before every run, so the 30-run results provide repeated empirical observations
+for all seven algorithm/data-structure combinations.
 Its theoretical summary is: insertion sort and bubble sort are O(n^2) on
 randomized data, while merge sort and Java's built-in object sort are O(n log n)
 in typical and worst-case comparison behavior. ArrayList generally performs
 better for indexed insertion and bubble operations; merge sort remains close
 to O(n log n) for both structures because it sorts through array-backed work
 lists.
+
+| Algorithm | ArrayList | LinkedList |
+|---|---|---|
+| Insertion sort | O(n^2) | O(n^2) |
+| Bubble sort | O(n^2) | O(n^2) |
+| Merge sort | O(n log n) | O(n log n) |
+| Built-in sort | O(n log n) | Not benchmarked |

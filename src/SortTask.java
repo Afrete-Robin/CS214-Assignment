@@ -18,16 +18,24 @@ public class SortTask implements Runnable {
     private final SortAlgorithms algorithms;
     private final JProgressBar progressBar;
     private final Algorithm algorithm;
+    private final SortRaceVisualizer.ProgressTracker progressTracker;
     private long durationMs;
 
     public SortTask(String name, List<University> dataCopy, java.util.Comparator<University> comparator,
                     SortAlgorithms algorithms, JProgressBar progressBar, Algorithm algorithm) {
+        this(name, dataCopy, comparator, algorithms, progressBar, algorithm, null);
+    }
+
+    public SortTask(String name, List<University> dataCopy, java.util.Comparator<University> comparator,
+                    SortAlgorithms algorithms, JProgressBar progressBar, Algorithm algorithm,
+                    SortRaceVisualizer.ProgressTracker progressTracker) {
         this.name = name;
         this.dataCopy = dataCopy;
         this.comparator = comparator;
         this.algorithms = algorithms;
         this.progressBar = progressBar;
         this.algorithm = algorithm;
+        this.progressTracker = progressTracker;
     }
 
     @Override
@@ -38,7 +46,11 @@ public class SortTask implements Runnable {
         java.util.function.IntConsumer reporter = p -> {
             int previous = lastProgress.get();
             if (p <= previous || !lastProgress.compareAndSet(previous, p)) return;
-            SwingUtilities.invokeLater(() -> progressBar.setValue(p));
+            if (progressTracker != null) {
+                progressTracker.update(name, p, progressBar);
+            } else {
+                SwingUtilities.invokeLater(() -> progressBar.setValue(p));
+            }
             long delayStart = System.nanoTime();
             try {
                 Thread.sleep(RACE_STEP_DELAY_MS);

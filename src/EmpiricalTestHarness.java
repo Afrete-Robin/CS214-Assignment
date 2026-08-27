@@ -88,9 +88,10 @@ public class EmpiricalTestHarness {
 
         String toCsvRow() {
             return algorithm + ","
-                    + best(comparisons) + "," + mean(comparisons) + "," + worst(comparisons) + ","
-                    + best(swaps) + "," + mean(swaps) + "," + worst(swaps) + ","
-                    + best(times) + "," + mean(times) + "," + worst(times);
+                    + best(comparisons) + "," + mean(comparisons) + "," + median(comparisons)
+                    + "," + worst(comparisons) + ","
+                    + best(swaps) + "," + mean(swaps) + "," + median(swaps) + "," + worst(swaps) + ","
+                    + best(times) + "," + mean(times) + "," + median(times) + "," + worst(times);
         }
     }
 
@@ -135,8 +136,9 @@ public class EmpiricalTestHarness {
 
     private void writeCsv(List<Result> results) {
         try (FileWriter writer = new FileWriter(CSV_FILE)) {
-            writer.write("Algorithm,BestComparisons,MeanComparisons,WorstComparisons,"
-                    + "BestSwaps,MeanSwaps,WorstSwaps,BestTimeMs,MeanTimeMs,WorstTimeMs\n");
+                writer.write("Algorithm,BestComparisons,MeanComparisons,MedianComparisons,WorstComparisons,"
+                    + "BestSwaps,MeanSwaps,MedianSwaps,WorstSwaps,"
+                    + "BestTimeMs,MeanTimeMs,MedianTimeMs,WorstTimeMs\n");
             for (Result r : results) {
                 writer.write(r.toCsvRow() + "\n");
             }
